@@ -24,7 +24,7 @@ def find_sources(dirs, exts):
     return sources
 
 # Configuration
-libname = "plugin_name"
+libname = "test"
 projectdir = "test_project"
 
 # Set up the environment
@@ -55,7 +55,7 @@ opts.Add(EnumVariable(
 
 is_2d_profile_used = False
 is_3d_profile_used = False
-is_custom_profile_used = True
+is_custom_profile_used = False
 if is_2d_profile_used:
     env["build_profile"] = "2d_build_profile.json"
 elif is_3d_profile_used:
@@ -78,7 +78,19 @@ Run the following command to download godot-cpp:
     sys.exit(1)
 
 # Include godot-cpp SConstruct, passing all command-line arguments
+if "platform" not in ARGUMENTS:
+    if sys.platform == "android":
+        ARGUMENTS["platform"] = "linux"
+        ARGUMENTS.setdefault("use_hot_reload", "no")
+    else:
+        ARGUMENTS["platform"] = sys.platform
 env = SConscript("godot-cpp/SConstruct", {"env": env, "customs": customs})
+
+# Platform-specific tweaks
+if sys.platform == "android":
+    env.Append(LIBPATH=["/data/data/com.termux/files/usr/lib"])
+    env.Append(LINKFLAGS=["-nostdlib++"])
+    env.Append(LIBS=["c++_shared"])
 
 # Process GDExtension-specific options
 source_dirs = env['source_dirs'].split(',')   # Convert comma-separated string to list
