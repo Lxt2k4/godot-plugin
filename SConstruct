@@ -24,7 +24,7 @@ def find_sources(dirs, exts):
     return sources
 
 # Configuration
-libname = "test"
+libname = "template"
 projectdir = "test_project"
 
 # Set up the environment
