@@ -11,6 +11,9 @@
 # Ignore custom.py
 custom.py
 
+# Ignore MinGW symlink workaround directory
+.mingw-fix/
+
 # Ignore generated compile_commands.json
 compile_commands.json
 
