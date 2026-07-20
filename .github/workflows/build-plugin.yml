@@ -179,9 +179,11 @@ jobs:
             THREADS_FLAG=" threads=${{ matrix.target.threads }}"
           fi
 
-          LTO_FLAG=""
+                    LTO_FLAG=""
           if [[ "${{ github.event.inputs.lto }}" = "auto" && "${{ matrix.target-type }}" = "template_release" ]]; then
-            if [[ "${{ matrix.target.platform }}" = "linux" || "${{ matrix.target.platform }}" = "windows" || "${{ matrix.target.platform }}" = "macos" || "${{ matrix.target.platform }}" = "android" || "${{ matrix.target.platform }}" = "ios" ]]; then
+            if [[ "${{ matrix.target.platform }}" = "linux" || "${{ matrix.target.platform }}" = "macos" || "${{ matrix.target.platform }}" = "android" ]]; then
+              LTO_FLAG=" lto=auto"
+            elif [[ "${{ matrix.target.platform }}" = "windows" && "${{ matrix.target.arch }}" != "arm64" ]]; then
               LTO_FLAG=" lto=auto"
             elif [[ "${{ matrix.target.platform }}" = "web" ]]; then
               if [[ "${{ matrix.target.threads }}" = "no" ]]; then
@@ -189,6 +191,8 @@ jobs:
               else
                 echo "WARNING: LTO disabled for web with threads=yes due to potential Emscripten issues."
               fi
+            else
+              echo "WARNING: LTO disabled for Windows ARM64 due to MinGW LTO compatibility issues."
             fi
           elif [[ "${{ github.event.inputs.lto }}" = "auto" && "${{ matrix.target-type }}" = "template_debug" ]]; then
             echo "WARNING: LTO ignored for debug builds, as it is not suitable for development."
